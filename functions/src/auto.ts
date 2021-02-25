@@ -5,6 +5,7 @@ import {
   sa,
   usersCollection,
   serverTimestamp,
+  placesCollection,
 } from "./utils";
 
 exports.createUser = auth.user().onCreate(async (user) => {
@@ -40,15 +41,19 @@ exports.updatePlaceName = firestore
   .onWrite(async (snapshot, context) => {
     const { docId } = context.params;
 
-    const place = snapshot.after.data() || {};
-    console.log("place: ", place);
+    const placeBefore = snapshot.before.data() || {};
+    const placeAfter = snapshot.after.data() || {};
+    // console.log("place: ", place);
+
+    if (placeBefore.nameLowercase && placeBefore.name === placeAfter.name)
+      return;
 
     const data = {
       updatedAt: serverTimestamp(),
-      name_lowercase: place.name.toLowerCase(),
+      nameLowercase: placeAfter.name.toLowerCase(),
     };
 
-    return usersCollection.doc(docId).set(data, { merge: true });
+    return placesCollection.doc(docId).set(data, { merge: true });
   });
 
 function cleanImagesArray(array = []) {
