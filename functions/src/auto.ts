@@ -107,13 +107,19 @@ exports.updatePlaceName = firestore
     const placeAfter = snapshot.after.data() || {};
     // console.log("place: ", place);
 
-    if (placeBefore.nameLowercase && placeBefore.name === placeAfter.name)
-      return;
+    let data = {};
 
-    const data = {
-      updatedAt: serverTimestamp(),
-      nameLowercase: placeAfter.name.toLowerCase(),
-    };
+    if (!placeBefore.nameLowercase || placeBefore.name !== placeAfter.name)
+      data = {
+        ...data,
+        nameLowercase: placeAfter.name.toLowerCase(),
+      };
+
+    if (placeBefore.isFavorite !== placeAfter.isFavorite)
+      data = { ...data, favoriteAt: serverTimestamp() };
+
+    if (placeBefore.isRecommended !== placeAfter.isRecommended)
+      data = { ...data, recommendedAt: serverTimestamp() };
 
     return placesCollection.doc(docId).set(data, { merge: true });
   });
@@ -166,16 +172,19 @@ exports.updateRestaurantName = firestore
     const restaurantAfter = snapshot.after.data() || {};
     // console.log("restaurant: ", restaurant);
 
-    if (
-      restaurantBefore.nameLowercase &&
-      restaurantBefore.name === restaurantAfter.name
-    )
-      return;
+    let data = {};
 
-    const data = {
-      updatedAt: serverTimestamp(),
-      nameLowercase: restaurantAfter.name.toLowerCase(),
-    };
+    if (
+      !restaurantBefore.nameLowercase ||
+      restaurantBefore.name !== restaurantAfter.name
+    )
+      data = {
+        ...data,
+        nameLowercase: restaurantAfter.name.toLowerCase(),
+      };
+
+    if (restaurantBefore.isRecommended !== restaurantAfter.isRecommended)
+      data = { ...data, recommendedAt: serverTimestamp() };
 
     return restaurantsCollection.doc(docId).set(data, { merge: true });
   });
@@ -228,16 +237,19 @@ exports.updateSouvenirName = firestore
     const souvenirAfter = snapshot.after.data() || {};
     // console.log("souvenir: ", souvenir);
 
-    if (
-      souvenirBefore.nameLowercase &&
-      souvenirBefore.name === souvenirAfter.name
-    )
-      return;
+    let data = {};
 
-    const data = {
-      updatedAt: serverTimestamp(),
-      nameLowercase: souvenirAfter.name.toLowerCase(),
-    };
+    if (
+      !souvenirBefore.nameLowercase ||
+      souvenirBefore.name !== souvenirAfter.name
+    )
+      data = {
+        ...data,
+        nameLowercase: souvenirAfter.name.toLowerCase(),
+      };
+
+    if (souvenirBefore.isRecommended !== souvenirAfter.isRecommended)
+      data = { ...data, recommendedAt: serverTimestamp() };
 
     return souvenirsCollection.doc(docId).set(data, { merge: true });
   });
@@ -290,16 +302,19 @@ exports.updateTransportName = firestore
     const transportAfter = snapshot.after.data() || {};
     // console.log("transport: ", transport);
 
-    if (
-      transportBefore.nameLowercase &&
-      transportBefore.name === transportAfter.name
-    )
-      return;
+    let data = {};
 
-    const data = {
-      updatedAt: serverTimestamp(),
-      nameLowercase: transportAfter.name.toLowerCase(),
-    };
+    if (
+      !transportBefore.nameLowercase ||
+      transportBefore.name !== transportAfter.name
+    )
+      data = {
+        ...data,
+        nameLowercase: transportAfter.name.toLowerCase(),
+      };
+
+    if (transportBefore.isRecommended !== transportAfter.isRecommended)
+      data = { ...data, recommendedAt: serverTimestamp() };
 
     return transportsCollection.doc(docId).set(data, { merge: true });
   });

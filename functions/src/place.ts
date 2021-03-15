@@ -19,6 +19,7 @@ exports.get = https.onCall(async (input = {}, context) => {
       // .where("name_lowercase", ">=", searchText)
       // .where("name_lowercase", "<=", searchText + "\uf8ff")
       // .orderBy("name_lowercase")
+      .orderBy("updatedAt", "desc")
       .limit(limit)
       .offset(offset)
       .get();
@@ -56,7 +57,7 @@ exports.favorite = https.onCall(async (input = {}, context) => {
     const querySnapshot = await placesCollection
       .where("isActive", "==", true)
       .where("isFavorite", "==", true)
-      // .orderBy("recommendedAt", "desc")
+      .orderBy("favoriteAt", "desc")
       .limit(limit)
       .offset(offset)
       .get();
@@ -94,7 +95,7 @@ exports.recommended = https.onCall(async (input = {}, context) => {
     const querySnapshot = await placesCollection
       .where("isActive", "==", true)
       .where("isRecommended", "==", true)
-      // .orderBy("recommendedAt", "desc")
+      .orderBy("recommendedAt", "desc")
       .limit(limit)
       .offset(offset)
       .get();
