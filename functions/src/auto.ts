@@ -79,15 +79,15 @@ exports.sendNotif = firestore
   });
 
 function cleanImagesArray(array = []) {
-  const cleanArray = array.map(({ src = "", title = "" }) => {
-    var imageSrc = src;
+  const cleanArray = array.map(({ uri = "", title = "" }) => {
+    var imageSrc = uri;
     var lastForwardSlash = imageSrc.lastIndexOf("/");
     var firstQueryString = imageSrc.indexOf("?");
     var imagePath = imageSrc.substring(lastForwardSlash + 1, firstQueryString);
     var decodedImagePath = decodeURIComponent(imagePath);
 
     return {
-      src: decodedImagePath,
+      uri: decodedImagePath,
       title: title,
     };
   });
@@ -141,11 +141,11 @@ exports.updatePlaceImages = firestore
     const newImages = cleanImagesArray(snapshot.after.data().images);
 
     const deletedImages = oldImages.filter((oldImage) =>
-      newImages.every((newImage) => newImage.src !== oldImage.src)
+      newImages.every((newImage) => newImage.uri !== oldImage.uri)
     );
 
     const imagesDeletedPromise = deletedImages.map((image) => {
-      const file = sa.bucket().file(image.src);
+      const file = sa.bucket().file(image.uri);
 
       file
         .exists()
@@ -153,7 +153,7 @@ exports.updatePlaceImages = firestore
           return file.delete();
         })
         .catch(() => {
-          return console.log(`${image.src} does not exist`);
+          return console.log(`${image.uri} does not exist`);
         });
     });
 
@@ -206,11 +206,11 @@ exports.updateRestaurantImages = firestore
     const newImages = cleanImagesArray(snapshot.after.data().images);
 
     const deletedImages = oldImages.filter((oldImage) =>
-      newImages.every((newImage) => newImage.src !== oldImage.src)
+      newImages.every((newImage) => newImage.uri !== oldImage.uri)
     );
 
     const imagesDeletedPromise = deletedImages.map((image) => {
-      const file = sa.bucket().file(image.src);
+      const file = sa.bucket().file(image.uri);
 
       file
         .exists()
@@ -218,7 +218,7 @@ exports.updateRestaurantImages = firestore
           return file.delete();
         })
         .catch(() => {
-          return console.log(`${image.src} does not exist`);
+          return console.log(`${image.uri} does not exist`);
         });
     });
 
@@ -271,11 +271,11 @@ exports.updateSouvenirImages = firestore
     const newImages = cleanImagesArray(snapshot.after.data().images);
 
     const deletedImages = oldImages.filter((oldImage) =>
-      newImages.every((newImage) => newImage.src !== oldImage.src)
+      newImages.every((newImage) => newImage.uri !== oldImage.uri)
     );
 
     const imagesDeletedPromise = deletedImages.map((image) => {
-      const file = sa.bucket().file(image.src);
+      const file = sa.bucket().file(image.uri);
 
       file
         .exists()
@@ -283,7 +283,7 @@ exports.updateSouvenirImages = firestore
           return file.delete();
         })
         .catch(() => {
-          return console.log(`${image.src} does not exist`);
+          return console.log(`${image.uri} does not exist`);
         });
     });
 
@@ -336,11 +336,11 @@ exports.updateTransportImages = firestore
     const newImages = cleanImagesArray(snapshot.after.data().images);
 
     const deletedImages = oldImages.filter((oldImage) =>
-      newImages.every((newImage) => newImage.src !== oldImage.src)
+      newImages.every((newImage) => newImage.uri !== oldImage.uri)
     );
 
     const imagesDeletedPromise = deletedImages.map((image) => {
-      const file = sa.bucket().file(image.src);
+      const file = sa.bucket().file(image.uri);
 
       file
         .exists()
@@ -348,7 +348,7 @@ exports.updateTransportImages = firestore
           return file.delete();
         })
         .catch(() => {
-          return console.log(`${image.src} does not exist`);
+          return console.log(`${image.uri} does not exist`);
         });
     });
 
