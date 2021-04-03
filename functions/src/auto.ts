@@ -3,6 +3,7 @@ import {
   firestore,
   cm,
   sa,
+  aa,
   usersCollection,
   serverTimestamp,
   placesCollection,
@@ -27,6 +28,25 @@ exports.createUser = auth.user().onCreate(async (user) => {
 
   return usersCollection.doc(user.uid).set(data, { merge: true });
 });
+
+exports.updateUserClaims = firestore
+  .document("users/{docId}")
+  .onUpdate(async (snapshot, context) => {
+    const { docId } = context.params;
+
+    const { isAdmin, name, photoURL } = snapshot.after.data();
+
+    return aa
+      .setCustomUserClaims(docId, {
+        isAdmin: isAdmin,
+        name: name,
+        picture: photoURL,
+      })
+      .then(() => {
+        // The new custom claims will propagate to the user's ID token the
+        // next time a new one is issued.
+      });
+  });
 
 exports.deleteUser = auth.user().onDelete(async (user) => {
   console.log("user: ", user);

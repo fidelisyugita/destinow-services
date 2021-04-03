@@ -5,13 +5,13 @@ exports.get = https.onCall(async (input = {}, context) => {
   console.log("input: ", input);
   console.log("context auth: ", context.auth);
 
-  let searchText = input.searchText || "";
+  let searchText = input?.searchText || "";
   searchText = searchText.toLowerCase();
 
   console.log("searchText: ", searchText);
 
-  const limit = input.limit || DATA_PER_PAGE;
-  const offset = input.page ? limit * input.page : 0;
+  const limit = input?.limit || DATA_PER_PAGE;
+  const offset = input?.page ? limit * input.page : 0;
 
   try {
     const querySnapshot = await placesCollection
@@ -50,8 +50,8 @@ exports.favorite = https.onCall(async (input = {}, context) => {
   console.log("input: ", input);
   console.log("context auth: ", context.auth);
 
-  const limit = input.limit || DATA_PER_PAGE;
-  const offset = input.page ? limit * input.page : 0;
+  const limit = input?.limit || DATA_PER_PAGE;
+  const offset = input?.page ? limit * input.page : 0;
 
   try {
     const querySnapshot = await placesCollection
@@ -88,8 +88,8 @@ exports.recommended = https.onCall(async (input = {}, context) => {
   console.log("input: ", input);
   console.log("context auth: ", context.auth);
 
-  const limit = (input && input.limit) || DATA_PER_PAGE;
-  const offset = input && input.page ? limit * input.page : 0;
+  const limit = input?.limit || DATA_PER_PAGE;
+  const offset = input?.page ? limit * input.page : 0;
 
   try {
     const querySnapshot = await placesCollection

@@ -17,6 +17,7 @@ export const { auth, firestore, database } = myFunctions;
 export const db = admin.firestore();
 export const cm = admin.messaging();
 export const sa = admin.storage();
+export const aa = admin.auth();
 
 export const constantsCollection = db.collection("constants");
 export const inboxesCollection = db.collection("inboxes");
