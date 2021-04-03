@@ -15,7 +15,7 @@ exports.get = https.onCall(async (input = {}, context) => {
 
   try {
     const querySnapshot = await placesCollection
-      // .where("isActive", "==", true)
+      .where("isActive", "==", true)
       // .where("name_lowercase", ">=", searchText)
       // .where("name_lowercase", "<=", searchText + "\uf8ff")
       // .orderBy("name_lowercase")
