@@ -242,7 +242,31 @@ exports.updateRestaurantImages = firestore
         });
     });
 
-    return Promise.all(imagesDeletedPromise);
+    const oldMenus = cleanImagesArray(
+      snapshot.before.data().menus.map((menu: { image: any }) => menu.image)
+    );
+    const newMenus = cleanImagesArray(
+      snapshot.after.data().menus.map((menu: { image: any }) => menu.image)
+    );
+
+    const deletedMenus = oldMenus.filter((oldMenu) =>
+      newMenus.every((newMenu) => newMenu.src !== oldMenu.src)
+    );
+
+    const menusDeletedPromise = deletedMenus.map((menu) => {
+      const file = sa.bucket().file(menu.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${menu.src} does not exist`);
+        });
+    });
+
+    return Promise.all([...imagesDeletedPromise, ...menusDeletedPromise]);
   });
 
 /**
@@ -307,7 +331,31 @@ exports.updateSouvenirImages = firestore
         });
     });
 
-    return Promise.all(imagesDeletedPromise);
+    const oldMenus = cleanImagesArray(
+      snapshot.before.data().menus.map((menu: { image: any }) => menu.image)
+    );
+    const newMenus = cleanImagesArray(
+      snapshot.after.data().menus.map((menu: { image: any }) => menu.image)
+    );
+
+    const deletedMenus = oldMenus.filter((oldMenu) =>
+      newMenus.every((newMenu) => newMenu.src !== oldMenu.src)
+    );
+
+    const menusDeletedPromise = deletedMenus.map((menu) => {
+      const file = sa.bucket().file(menu.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${menu.src} does not exist`);
+        });
+    });
+
+    return Promise.all([...imagesDeletedPromise, ...menusDeletedPromise]);
   });
 
 /**
@@ -372,5 +420,29 @@ exports.updateTransportImages = firestore
         });
     });
 
-    return Promise.all(imagesDeletedPromise);
+    const oldMenus = cleanImagesArray(
+      snapshot.before.data().menus.map((menu: { image: any }) => menu.image)
+    );
+    const newMenus = cleanImagesArray(
+      snapshot.after.data().menus.map((menu: { image: any }) => menu.image)
+    );
+
+    const deletedMenus = oldMenus.filter((oldMenu) =>
+      newMenus.every((newMenu) => newMenu.src !== oldMenu.src)
+    );
+
+    const menusDeletedPromise = deletedMenus.map((menu) => {
+      const file = sa.bucket().file(menu.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${menu.src} does not exist`);
+        });
+    });
+
+    return Promise.all([...imagesDeletedPromise, ...menusDeletedPromise]);
   });
