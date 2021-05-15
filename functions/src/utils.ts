@@ -29,11 +29,10 @@ export const placesCollection = db.collection("places");
 export const restaurantsCollection = db.collection("restaurants");
 export const souvenirsCollection = db.collection("souvenirs");
 export const transportsCollection = db.collection("transports");
+export const newsCollection = db.collection("news");
+export const localDiariesCollection = db.collection("localDiaries");
 
 export const reviewsCollection = db.collection("reviews");
 
-export const {
-  arrayUnion,
-  arrayRemove,
-  serverTimestamp,
-} = admin.firestore.FieldValue;
+export const { arrayUnion, arrayRemove, serverTimestamp } =
+  admin.firestore.FieldValue;

@@ -10,6 +10,8 @@ import {
   restaurantsCollection,
   souvenirsCollection,
   transportsCollection,
+  newsCollection,
+  localDiariesCollection,
 } from "./utils";
 
 exports.createUser = auth.user().onCreate(async (user) => {
@@ -34,13 +36,11 @@ exports.createUser = auth.user().onCreate(async (user) => {
 //   .onUpdate(async (snapshot, context) => {
 //     const { docId } = context.params;
 
-//     const { isAdmin, name, photoURL } = snapshot.after.data();
+//     const { isAdmin } = snapshot.after.data();
 
 //     return aa
 //       .setCustomUserClaims(docId, {
 //         isAdmin: isAdmin,
-//         name: name,
-//         picture: photoURL,
 //       })
 //       .then(() => {
 //         // The new custom claims will propagate to the user's ID token the
@@ -445,4 +445,183 @@ exports.updateTransportImages = firestore
     });
 
     return Promise.all([...imagesDeletedPromise, ...menusDeletedPromise]);
+  });
+
+/**
+ * NEWS
+ */
+exports.updateNewsName = firestore
+  .document("news/{docId}")
+  .onWrite(async (snapshot, context) => {
+    const { docId } = context.params;
+
+    const newsBefore = snapshot.before.data() || {};
+    const newsAfter = snapshot.after.data() || {};
+    // console.log("news: ", news);
+
+    let data = {};
+
+    if (!newsBefore.nameLowercase || newsBefore.name !== newsAfter.name)
+      data = {
+        ...data,
+        nameLowercase: newsAfter.name.toLowerCase(),
+      };
+
+    if (newsBefore.isRecommended !== newsAfter.isRecommended)
+      data = { ...data, recommendedAt: serverTimestamp() };
+
+    return newsCollection.doc(docId).set(data, { merge: true });
+  });
+
+exports.deleteNewsImages = firestore
+  .document("news/{docId}")
+  .onDelete(async (snapshot, context) => {
+    const { docId } = context.params;
+
+    return sa.bucket().deleteFiles({
+      prefix: `news/${docId}`,
+    });
+  });
+
+exports.updateNewsImages = firestore
+  .document("news/{docId}")
+  .onUpdate(async (snapshot, context) => {
+    const oldImages = cleanImagesArray(snapshot.before.data().images);
+    const newImages = cleanImagesArray(snapshot.after.data().images);
+
+    const deletedImages = oldImages.filter((oldImage) =>
+      newImages.every((newImage) => newImage.src !== oldImage.src)
+    );
+
+    const imagesDeletedPromise = deletedImages.map((image) => {
+      const file = sa.bucket().file(image.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${image.src} does not exist`);
+        });
+    });
+
+    const oldParagraphs = cleanImagesArray(
+      snapshot.before
+        .data()
+        .paragraphs.map((item: { image: any }) => item.image)
+    );
+    const newParagraphs = cleanImagesArray(
+      snapshot.after.data().paragraphs.map((item: { image: any }) => item.image)
+    );
+
+    const deletedParagraphs = oldParagraphs.filter((oldP) =>
+      newParagraphs.every((newP) => newP.src !== oldP.src)
+    );
+
+    const paragraphsDeletedPromise = deletedParagraphs.map((item) => {
+      const file = sa.bucket().file(item.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${item.src} does not exist`);
+        });
+    });
+
+    return Promise.all([...imagesDeletedPromise, ...paragraphsDeletedPromise]);
+  });
+
+/**
+ * LOCAL DIARIES
+ */
+exports.updateLocalDiariesName = firestore
+  .document("localDiaries/{docId}")
+  .onWrite(async (snapshot, context) => {
+    const { docId } = context.params;
+
+    const localDiaryBefore = snapshot.before.data() || {};
+    const localDiaryAfter = snapshot.after.data() || {};
+    // console.log("localDiary: ", localDiary);
+
+    let data = {};
+
+    if (
+      !localDiaryBefore.nameLowercase ||
+      localDiaryBefore.name !== localDiaryAfter.name
+    )
+      data = {
+        ...data,
+        nameLowercase: localDiaryAfter.name.toLowerCase(),
+      };
+
+    if (localDiaryBefore.isRecommended !== localDiaryAfter.isRecommended)
+      data = { ...data, recommendedAt: serverTimestamp() };
+
+    return localDiariesCollection.doc(docId).set(data, { merge: true });
+  });
+
+exports.deleteLocalDiariesImages = firestore
+  .document("localDiaries/{docId}")
+  .onDelete(async (snapshot, context) => {
+    const { docId } = context.params;
+
+    return sa.bucket().deleteFiles({
+      prefix: `localDiaries/${docId}`,
+    });
+  });
+
+exports.updateLocalDiariesImages = firestore
+  .document("localDiaries/{docId}")
+  .onUpdate(async (snapshot, context) => {
+    const oldImages = cleanImagesArray(snapshot.before.data().images);
+    const newImages = cleanImagesArray(snapshot.after.data().images);
+
+    const deletedImages = oldImages.filter((oldImage) =>
+      newImages.every((newImage) => newImage.src !== oldImage.src)
+    );
+
+    const imagesDeletedPromise = deletedImages.map((image) => {
+      const file = sa.bucket().file(image.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${image.src} does not exist`);
+        });
+    });
+
+    const oldParagraphs = cleanImagesArray(
+      snapshot.before
+        .data()
+        .paragraphs.map((item: { image: any }) => item.image)
+    );
+    const newParagraphs = cleanImagesArray(
+      snapshot.after.data().paragraphs.map((item: { image: any }) => item.image)
+    );
+
+    const deletedParagraphs = oldParagraphs.filter((oldP) =>
+      newParagraphs.every((newP) => newP.src !== oldP.src)
+    );
+
+    const paragraphsDeletedPromise = deletedParagraphs.map((item) => {
+      const file = sa.bucket().file(item.src);
+
+      file
+        .exists()
+        .then(() => {
+          return file.delete();
+        })
+        .catch(() => {
+          return console.log(`${item.src} does not exist`);
+        });
+    });
+
+    return Promise.all([...imagesDeletedPromise, ...paragraphsDeletedPromise]);
   });
