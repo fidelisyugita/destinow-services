@@ -9,6 +9,7 @@ import * as souvenir from "./souvenir";
 import * as transport from "./transport";
 import * as news from "./news";
 import * as localDiary from "./localDiary";
+import * as review from "./review";
 
 if (!admin.apps.length) admin.initializeApp(functions.config().firebase);
 
@@ -20,3 +21,4 @@ exports.souvenir = souvenir;
 exports.transport = transport;
 exports.news = news;
 exports.localDiary = localDiary;
+exports.review = review;
