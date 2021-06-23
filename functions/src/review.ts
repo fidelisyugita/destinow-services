@@ -1,5 +1,5 @@
 import { https, reviewsCollection, serverTimestamp } from "./utils";
-import { DATA_PER_PAGE, ERROR_401, ERROR_NO_INPUT } from "./consts";
+import { DATA_PER_PAGE, ERROR_401 } from "./consts";
 
 exports.get = https.onCall(async (input = {}, context) => {
   console.log("input: ", input);
@@ -8,17 +8,17 @@ exports.get = https.onCall(async (input = {}, context) => {
   const limit = input?.limit || DATA_PER_PAGE;
   const offset = input?.page ? limit * input.page : 0;
 
-  const placeId = input.placeId;
-  if (!placeId || placeId.length < 1) {
-    return {
-      ok: false,
-      error: ERROR_NO_INPUT,
-    };
-  }
+  const placeId = input.placeId || "-";
+  const restaurantId = input.restaurantId || "-";
+  const souvenirId = input.souvenirId || "-";
+  const transportId = input.transportId || "-";
 
   try {
     const querySnapshot = await reviewsCollection
       .where("placeId", "==", placeId)
+      .where("restaurantId", "==", restaurantId)
+      .where("souvenirId", "==", souvenirId)
+      .where("transportId", "==", transportId)
       .where("isActive", "==", true)
       .orderBy("updatedAt", "desc")
       .limit(limit)
@@ -60,13 +60,13 @@ exports.save = https.onCall(async (input = {}, context) => {
     };
   }
 
-  const placeId = input.placeId;
-  if (!placeId || placeId.length < 1) {
-    return {
-      ok: false,
-      error: ERROR_NO_INPUT,
-    };
-  }
+  // const placeId = input.placeId;
+  // if (!placeId || placeId.length < 1) {
+  //   return {
+  //     ok: false,
+  //     error: ERROR_NO_INPUT,
+  //   };
+  // }
 
   const { token } = context.auth;
   const currentUser = {
@@ -88,6 +88,10 @@ exports.save = https.onCall(async (input = {}, context) => {
 
   const data = {
     ...input,
+    placeId: input.placeId || "-",
+    restaurantId: input.restaurantId || "-",
+    souvenirId: input.souvenirId || "-",
+    transportId: input.transportId || "-",
     isActive: true,
     updatedBy: input.updatedBy || currentUser,
     updatedAt: serverTimestamp(),

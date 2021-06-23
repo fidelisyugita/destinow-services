@@ -12,6 +12,7 @@ import * as localDiary from "./localDiary";
 import * as review from "./review";
 
 if (!admin.apps.length) admin.initializeApp(functions.config().firebase);
+// admin.firestore().settings({ ignoreUndefinedProperties: true });
 
 exports.auto = auto;
 exports.banner = banner;
