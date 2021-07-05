@@ -86,7 +86,7 @@ exports.save = https.onCall(async (input = {}, context) => {
     };
   }
 
-  const data = {
+  let data = {
     ...input,
     placeId: input.placeId || "-",
     restaurantId: input.restaurantId || "-",
@@ -104,11 +104,12 @@ exports.save = https.onCall(async (input = {}, context) => {
       await reviewsCollection.doc(input.id).set(data, { merge: true });
       response = { ...data, id: input.id };
     } else {
-      const docRef = await reviewsCollection.add({
+      data = {
         ...data,
         createdBy: input.createdBy || currentUser,
         createdAt: serverTimestamp(),
-      });
+      };
+      const docRef = await reviewsCollection.add(data);
       response = { ...data, id: docRef.id };
     }
 
