@@ -59,8 +59,40 @@ exports.deleteUser = auth.user().onDelete(async (user) => {
   return usersCollection.doc(user.uid).set(data, { merge: true });
 });
 
+exports.sendNotifBanner = firestore
+  .document("banners/{docId}")
+  .onCreate(async (snapshot, context) => {
+    console.log("context: ", context);
+
+    const data = snapshot.data();
+    console.log("data: ", data);
+
+    const querySnapshot = await usersCollection.get();
+    const users = querySnapshot.docs.map((doc) => doc.data());
+
+    console.log("users: ", users);
+
+    const notification = {
+      title: (data && data.name) || "Title",
+    };
+
+    let promises: any[] = [];
+    users.forEach((user) => {
+      if (user.fcmToken && user.fcmToken.length > 0) {
+        promises.push(
+          cm.send({
+            notification: notification,
+            token: user.fcmToken,
+          })
+        );
+      }
+    });
+
+    return Promise.all(promises);
+  });
+
 exports.sendNotif = firestore
-  .document("inboxes/{docId}")
+  .document("news/{docId}")
   .onCreate(async (snapshot, context) => {
     console.log("context: ", context);
 
@@ -90,12 +122,6 @@ exports.sendNotif = firestore
     });
 
     return Promise.all(promises);
-
-    // await cm.send({
-    //   notification: notification,
-    //   token:
-    //     "euPNym7SA8M:APA91bEtGh9HW0tgwKNGYBKjVrA_sXc8emrUgKYbhYRm2rJrq5jMcXgix02vs2yN5urplfTQ5PU6htjz1mAovhVsNFMgHewTZyrsGetDXUNjKVVQDdAlaajI-KyaTsWb-oBm1f2uImaR",
-    // });
   });
 
 function cleanImagesArray(array = []) {
